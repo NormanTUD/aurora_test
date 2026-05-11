@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: #000;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .content {
+            position: relative;
+            z-index: 10;
+            max-width: 740px;
+            margin: 0 auto;
+            padding: 16vh 2rem 20vh;
+        }
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(2.8rem, 7.5vw, 5.5rem);
+            line-height: 1.1;
+            margin-bottom: 0.4em;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 0 80px rgba(80, 220, 150, 0.12), 0 0 30px rgba(60, 180, 200, 0.08);
+        }
+        .subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-style: italic;
+            font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+            color: rgba(150, 200, 190, 0.45);
+            margin-bottom: 5rem;
+        }
+        .text-block { margin-bottom: 3.2rem; }
+        .text-block h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 400;
+            font-size: clamp(1.25rem, 2.8vw, 1.7rem);
+            margin-bottom: 0.85rem;
+            color: rgba(140, 225, 185, 0.75);
+        }
+        .text-block p {
+            font-weight: 300;
+            font-size: clamp(0.92rem, 1.5vw, 1.05rem);
+            line-height: 1.95;
+            color: rgba(210, 222, 235, 0.78);
+            text-shadow: 0 2px 20px rgba(0,0,0,1);
+        }
+        .divider {
+            width: 45px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(100, 200, 170, 0.3), transparent);
+            margin: 4rem 0;
+        }
+        .quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: clamp(1.15rem, 2.5vw, 1.6rem);
+            line-height: 1.7;
+            color: rgba(165, 225, 205, 0.55);
+            border-left: 1.5px solid rgba(100, 200, 170, 0.18);
+            padding-left: 1.4rem;
+            margin: 4.5rem 0;
+            text-shadow: 0 2px 30px rgba(0,0,0,0.95);
+        }
+        ::selection { background: rgba(80, 200, 160, 0.2); color: #fff; }
+    </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="content">
+    <h1 class="hero-title">Zwischen Licht<br>und Stille</h1>
+    <p class="subtitle">Eine Meditation über das Flüchtige</p>
+
+    <div class="text-block">
+        <h2>Das Erwachen</h2>
+        <p>
+            Es gibt Momente, die sich weigern, in Worte gefasst zu werden — Augenblicke, in denen die Welt ihren Atem anhält und das Licht selbst zu tanzen beginnt. In der Stille zwischen zwei Herzschlägen entfaltet sich ein Universum, das nur jenen sichtbar wird, die bereit sind, hinzusehen.
+        </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="text-block">
+        <h2>Fragmente der Dämmerung</h2>
+        <p>
+            Wir bewegen uns durch Landschaften aus Erinnerung und Erwartung, durch Räume, die weder ganz Traum noch ganz Wirklichkeit sind. Jeder Schritt hinterlässt eine Spur im weichen Gewebe der Zeit — unsichtbar für die meisten, doch leuchtend für jene, die wissen, wonach sie suchen.
+        </p>
+    </div>
+
+    <div class="quote">
+        „Was wir im Licht finden, war immer schon da — verborgen in der Dunkelheit, wartend auf den Mut, gesehen zu werden."
+    </div>
+
+    <div class="text-block">
+        <h2>Die Architektur des Augenblicks</h2>
+        <p>
+            Manchmal genügt ein einziger Moment vollkommener Klarheit, um alles zu verändern. Nicht die großen Gesten sind es, die uns formen, sondern die leisen — das Rascheln eines Blattes im Novemberwind, der Geruch von Regen auf warmem Stein, das ferne Echo eines Liedes, dessen Melodie in unseren Knochen wohnt.
+        </p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="text-block">
+        <h2>Vom Vergehen und Bleiben</h2>
+        <p>
+            Alles Schöne trägt in sich den Keim seiner Vergänglichkeit — und gerade darin liegt seine Vollkommenheit. Es ist das Wissen um das Ende, das jedem Anfang seine Tiefe verleiht. Wir sind Geschöpfe des Übergangs, und in diesem schwebenden Jetzt liegt alles, was wir jemals brauchen werden.
+        </p>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false });
+
+const RES = 0.5;
+
+function resize() {
+    const dpr = Math.min(window.devicePixelRatio, 1.5);
+    canvas.width = Math.floor(window.innerWidth * dpr * RES);
+    canvas.height = Math.floor(window.innerHeight * dpr * RES);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+const vert = `attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+
+const frag = `
+precision mediump float;
+uniform float t;
+uniform vec2 r;
+uniform sampler2D uStars;
+
+vec2 hash(vec2 p) {
+    p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+    return -1.0 + 2.0 * fract(sin(p) * 43758.5453);
+}
+
+float gnoise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+    float a = dot(hash(i), f);
+    float b = dot(hash(i + vec2(1, 0)), f - vec2(1, 0));
+    float c = dot(hash(i + vec2(0, 1)), f - vec2(0, 1));
+    float d = dot(hash(i + vec2(1, 1)), f - vec2(1, 1));
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y) * 0.5 + 0.5;
+}
+
+float fbm(vec2 p) {
+    float v = 0.0, a = 0.5;
+    mat2 rot = mat2(0.866, 0.5, -0.5, 0.866);
+    for(int i = 0; i < 4; i++) {
+        v += a * gnoise(p);
+        p = rot * p * 2.05;
+        a *= 0.47;
+    }
+    return v;
+}
+
+// 3D perspective projection — looking up at an angle
+// Maps screen UV to a point on a virtual sky dome
+// Returns (worldX, worldZ) on a plane at height Y
+vec2 skyProject(vec2 uv, float time) {
+    // Camera looks upward at ~60 degrees from horizon
+    float aspect = r.x / r.y;
+    
+    // Screen to view direction
+    vec3 viewDir;
+    viewDir.x = (uv.x - 0.5) * aspect * 1.2;
+    viewDir.y = mix(0.4, 1.8, uv.y); // bottom of screen = near horizon, top = near zenith
+    viewDir.z = 1.0;
+    viewDir = normalize(viewDir);
+    
+    // Intersect with aurora plane at height h
+    // Aurora is at a fixed height, we look up at it
+    float auroraHeight = 3.0;
+    float tRay = auroraHeight / max(viewDir.y, 0.01);
+    
+    vec2 worldPos = vec2(viewDir.x, viewDir.z) * tRay;
+    
+    // Slow overall drift — the whole aurora sheet moves
+    worldPos.y += time * 0.02;
+    worldPos.x += sin(time * 0.01) * 0.5;
+    
+    return worldPos;
+}
+
+// Curtain band in world space
+float curtainBand(vec2 wp, float time, float baseZ, float speed, float seed, float thickness) {
+    // The curtain runs along X, undulates in Z
+    float fold = 0.0;
+    fold += sin(wp.x * 0.4 + time * speed + seed) * 0.8;
+    fold += sin(wp.x * 0.9 - time * speed * 0.7 + seed * 2.3) * 0.35;
+    fold += sin(wp.x * 0.18 + time * speed * 0.35 + seed * 0.6) * 1.2;
+    fold += sin(wp.x * 1.6 + time * speed * 1.1 + seed * 3.1) * 0.15;
+    fold += (fbm(vec2(wp.x * 0.12 + time * speed * 0.2, time * 0.006 + seed)) - 0.5) * 2.0;
+    
+    float center = baseZ + fold;
+    float dist = wp.y - center;
+    
+    // Sharp one side, soft the other
+    float inner = smoothstep(-0.05, 0.3 * thickness, dist);
+    float outer = smoothstep(2.8 * thickness, 0.0, dist);
+    float outerGlow = smoothstep(5.0 * thickness, 0.0, dist) * 0.2;
+    
+    return inner * outer + outerGlow * inner;
+}
+
+// Vertical rays — in world space they're vertical columns
+float rays(vec2 wp, float screenY, float time, float mask) {
+    float ray = gnoise(vec2(wp.x * 2.5 + time * 0.02, time * 0.01));
+    ray = pow(max(ray - 0.4, 0.0), 3.0) * 10.0;
+    float ray2 = gnoise(vec2(wp.x * 5.0 - time * 0.015, time * 0.007 + 5.0));
+    ray2 = pow(max(ray2 - 0.48, 0.0), 4.0) * 14.0;
+    // Rays are vertical — they extend in screen Y
+    // Stronger in the middle of the screen vertically
+    float vFade = smoothstep(0.0, 0.2, screenY) * smoothstep(0.95, 0.5, screenY);
+    return (ray + ray2) * mask * vFade * 0.15;
+}
+
+void main() {
+    vec2 screenUV = gl_FragCoord.xy / r;
+    screenUV.y = 1.0 - screenUV.y; // 0 = top
+    float time = t;
+    
+    // === SKY PROJECTION ===
+    vec2 wp = skyProject(screenUV, time);
+    
+    // Distance from camera (for fog/fade)
+    float depth = length(wp) * 0.05;
+    
+    // === SKY GRADIENT ===
+    vec3 sky = mix(
+        vec3(0.003, 0.003, 0.025),
+        vec3(0.012, 0.018, 0.042),
+        pow(screenUV.y, 1.2)
+    );
+    // Deep purple zenith
+    sky += vec3(0.01, 0.002, 0.016) * smoothstep(0.4, 0.0, screenUV.y) * 0.6;
+    // Warm horizon
+    sky += vec3(0.01, 0.006, 0.003) * smoothstep(0.4, 1.0, screenUV.y);
+    
+    // === STARS ===
+    vec3 starCol = texture2D(uStars, gl_FragCoord.xy / r).rgb;
+    float tw = sin(time * 0.5 + starCol.r * 70.0 + gl_FragCoord.x * 0.008) * 0.15 + 0.85;
+    float tw2 = sin(time * 0.35 + starCol.g * 50.0 + gl_FragCoord.y * 0.01) * 0.1 + 0.9;
+    sky += starCol * tw * tw2;
+    
+    // === AURORA BANDS ===
+    // All bands exist in world space — the perspective projection handles the "looking up" effect
+    // Near the top of screen (zenith), world coords spread out = bands appear compressed/converging
+    // Near bottom (horizon), world coords are close = bands appear wide
+    
+    // Band 1 — main bright green curtain
+    float b1 = curtainBand(wp, time, 0.0, 0.04, 0.0, 1.0);
+    float i1 = fbm(vec2(wp.x * 0.08 + time * 0.012, time * 0.004));
+    i1 = 0.45 + i1 * 0.55;
+    float p1 = sin(time * 0.2 + wp.x * 0.15) * 0.06 + 0.94;
+    p1 *= sin(time * 0.12 + wp.x * 0.05 + 1.5) * 0.04 + 0.96;
+    b1 *= i1 * p1;
+    // Fade with distance (atmospheric perspective)
+    b1 *= smoothstep(25.0, 8.0, depth);
+    
+    vec3 c1 = mix(vec3(0.04, 0.44, 0.22), vec3(0.22, 0.88, 0.45), pow(b1, 0.8));
+    c1 = mix(c1, vec3(0.32, 0.92, 0.5), pow(b1, 2.5) * 0.35);
+    
+    // Band 2 — teal-blue, offset in Z
+    float b2 = curtainBand(wp, time, 4.0, 0.032, 5.5, 1.3);
+    float i2 = fbm(vec2(wp.x * 0.06 - time * 0.008, time * 0.003 + 5.0));
+    i2 = 0.35 + i2 * 0.65;
+    float p2 = sin(time * 0.16 + wp.x * 0.1 + 3.0) * 0.07 + 0.93;
+    b2 *= i2 * p2;
+    b2 *= smoothstep(25.0, 8.0, depth);
+    
+    vec3 c2 = mix(vec3(0.03, 0.26, 0.42), vec3(0.1, 0.54, 0.62), pow(b2, 0.8));
+    c2 = mix(c2, vec3(0.14, 0.66, 0.7), pow(b2, 2.0) * 0.3);
+    
+    // Band 3 — violet/magenta, further away
+    float b3 = curtainBand(wp, time, -3.0, 0.028, 11.0, 1.6);
+    float i3 = fbm(vec2(wp.x * 0.05 + time * 0.006, time * 0.002 + 11.0));
+    i3 = 0.3 + i3 * 0.7;
+    b3 *= i3 * 0.4;
+    b3 *= smoothstep(25.0, 6.0, depth);
+    
+    vec3 c3 = mix(vec3(0.18, 0.04, 0.3), vec3(0.4, 0.1, 0.52), pow(b3, 0.7));
+    c3 = mix(c3, vec3(0.48, 0.14, 0.38), pow(b3, 2.0) * 0.45);
+    
+    // Band 4 — wide faint green wash
+    float b4 = curtainBand(wp, time, 8.0, 0.02, 17.0, 2.2);
+    b4 *= fbm(vec2(wp.x * 0.04 + time * 0.004, time * 0.002 + 17.0)) * 0.3;
+    b4 *= smoothstep(30.0, 10.0, depth);
+    
+    vec3 c4 = mix(vec3(0.02, 0.18, 0.14), vec3(0.05, 0.32, 0.22), b4);
+    
+    // Band 5 — faint high wisps
+    float b5 = curtainBand(wp, time, -6.0, 0.05, 23.0, 2.0);
+    b5 *= fbm(vec2(wp.x * 0.03 + time * 0.007, time * 0.002 + 23.0)) * 0.2;
+    b5 *= smoothstep(20.0, 5.0, depth);
+    
+    vec3 c5 = vec3(0.14, 0.05, 0.22);
+    
+    // === VERTICAL RAYS ===
+    float rayMask = max(b1, max(b2 * 0.6, b3 * 0.3));
+    float rayVal = rays(wp, screenUV.y, time, rayMask);
+    vec3 rayCol = mix(vec3(0.08, 0.52, 0.3), vec3(0.06, 0.38, 0.5), gnoise(vec2(wp.x * 0.3, time * 0.006)));
+    
+    // === RED UPPER GLOW ===
+    float redMask = smoothstep(0.3, 0.0, screenUV.y);
+    float redInt = (b1 * 0.4 + b3 * 0.7) * redMask * 0.2;
+    redInt *= gnoise(vec2(wp.x * 0.1 + time * 0.004, time * 0.003 + 30.0));
+    vec3 redCol = vec3(0.35, 0.05, 0.1);
+    
+    // === AMBIENT + HORIZON ===
+    float ambientAurora = (b1 * 0.25 + b2 * 0.15 + b4 * 0.1);
+    vec3 ambientCol = vec3(0.012, 0.035, 0.02) * ambientAurora;
+    
+    float hGlow = smoothstep(0.5, 1.0, screenUV.y) * 0.25;
+    hGlow *= 0.1 + 0.04 * sin(time * 0.06 + screenUV.x * 2.0);
+    hGlow *= fbm(vec2(screenUV.x * 1.5 + time * 0.003, 50.0)) * 0.7 + 0.4;
+    vec3 horizonCol = mix(vec3(0.012, 0.05, 0.025), vec3(0.015, 0.035, 0.04), screenUV.x);
+    
+    // === COMPOSE ===
+    vec3 col = sky;
+    col += ambientCol;
+    col += horizonCol * hGlow;
+    
+    col += c1 * b1 * 0.7;
+    col += c2 * b2 * 0.45;
+    col += c3 * b3 * 0.55;
+    col += c4 * b4 * 0.3;
+    col += c5 * b5 * 0.4;
+    col += rayCol * rayVal;
+    col += redCol * redInt;
+    
+    // Dim stars behind aurora
+    float auroraLum = b1 * 0.6 + b2 * 0.35 + b3 * 0.25 + b4 * 0.15;
+    col -= starCol * tw * auroraLum * 0.5;
+    
+    // === POST ===
+    float globalPulse = 0.96 + sin(time * 0.08) * 0.025 + sin(time * 0.13 + 2.0) * 0.015;
+    col *= globalPulse;
+    
+    // Vignette
+    vec2 vc = screenUV - vec2(0.5, 0.4);
+    vc *= vec2(1.0, 0.8);
+    col *= 1.0 - dot(vc, vc) * 0.3;
+    
+    // ACES tonemap
+    col = (col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14);
+    
+    // Desaturation at brightness
+    float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+    col = mix(col, vec3(lum), smoothstep(0.5, 0.9, lum) * 0.1);
+    
+    // Color grade
+    col.b += (1.0 - lum) * 0.006;
+    col.r += lum * 0.004;
+    
+    gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+function compile(src, type) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    return s;
+}
+
+const prog = gl.createProgram();
+gl.attachShader(prog, compile(vert, gl.VERTEX_SHADER));
+gl.attachShader(prog, compile(frag, gl.FRAGMENT_SHADER));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const pLoc = gl.getAttribLocation(prog, 'p');
+gl.enableVertexAttribArray(pLoc);
+gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
+
+const tLoc = gl.getUniformLocation(prog, 't');
+const rLoc = gl.getUniformLocation(prog, 'r');
+const starsLoc = gl.getUniformLocation(prog, 'uStars');
+
+function generateStars(w, h) {
+    const data = new Uint8Array(w * h * 4);
+    const count = Math.floor(w * h / 350);
+    for (let i = 0; i < count; i++) {
+        const x = Math.floor(Math.random() * w);
+        const y = Math.floor(Math.random() * h);
+        if (y / h < 0.1) continue;
+        const brightness = Math.pow(Math.random(), 3.0);
+        const b = Math.floor(brightness * 200);
+        const temp = Math.random();
+        let cr = b, cg = b, cb = b;
+        if (temp < 0.25) { cb += 20; cg += 8; }
+        else if (temp < 0.4) { cb += 10; cg += 10; }
+        else if (temp < 0.7) { cg += 5; }
+        else if (temp < 0.85) { cr += 8; cg += 3; cb -= 5; }
+        else { cr += 15; cb -= 10; cg -= 3; }
+        const idx = (y * w + x) * 4;
+        data[idx] = Math.min(255, Math.max(0, cr));
+        data[idx+1] = Math.min(255, Math.max(0, cg));
+        data[idx+2] = Math.min(255, Math.max(0, cb));
+        data[idx+3] = 255;
+        if (brightness > 0.65) {
+            const g = Math.floor(b * 0.25);
+            for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+                const nx = x+dx, ny = y+dy;
+                if (nx>=0 && nx<w && ny>=0 && ny<h) {
+                    const ni = (ny*w+nx)*4;
+                    data[ni] = Math.min(255, data[ni]+g);
+                    data[ni+1] = Math.min(255, data[ni+1]+g);
+                    data[ni+2] = Math.min(255, data[ni+2]+Math.floor(g*1.15));
+                }
+            }
+            if (brightness > 0.85) {
+                const dg = Math.floor(b * 0.12);
+                for (const [dx,dy] of [[-1,-1],[1,-1],[-1,1],[1,1]]) {
+                    const nx = x+dx, ny = y+dy;
+                    if (nx>=0 && nx<w && ny>=0 && ny<h) {
+                        const ni = (ny*w+nx)*4;
+                        data[ni] = Math.min(255, data[ni]+dg);
+                        data[ni+1] = Math.min(255, data[ni+1]+dg);
+                        data[ni+2] = Math.min(255, data[ni+2]+dg);
+                    }
+                }
+            }
+        }
+    }
+    const bc = Math.floor(count * 0.003);
+    for (let i = 0; i < bc; i++) {
+        const x = Math.floor(Math.random()*w);
+        const y = Math.floor(Math.random()*(h*0.7))+Math.floor(h*0.15);
+        const b = 180+Math.floor(Math.random()*75);
+        for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++) {
+            const nx=x+dx, ny=y+dy;
+            if (nx>=0&&nx<w&&ny>=0&&ny<h) {
+                const d=Math.sqrt(dx*dx+dy*dy);
+                const f=d===0?1.0:0.3;
+                const v=Math.floor(b*f);
+                const ni=(ny*w+nx)*4;
+                data[ni]=Math.min(255,data[ni]+v);
+                data[ni+1]=Math.min(255,data[ni+1]+v);
+                data[ni+2]=Math.min(255,data[ni+2]+Math.floor(v*1.1));
+            }
+        }
+    }
+    return data;
+}
+
+function uploadStars() {
+    const w = canvas.width, h = canvas.height;
+    gl.bindTexture(gl.TEXTURE_2D, starTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, generateStars(w, h));
+}
+
+const starTex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, starTex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+uploadStars();
+gl.activeTexture(gl.TEXTURE0);
+gl.bindTexture(gl.TEXTURE_2D, starTex);
+gl.uniform1i(starsLoc, 0);
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(uploadStars, 250);
+});
+
+let start = 0;
+function frame(now) {
+    if (!start) start = now;
+    gl.uniform1f(tLoc, (now - start) * 0.001);
+    gl.uniform2f(rLoc, canvas.width, canvas.height);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+
+</body>
+</html>
