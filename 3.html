@@ -269,7 +269,7 @@ void main() {
     // Near bottom (horizon), world coords are close = bands appear wide
     
     // Band 1 — main bright green curtain
-    float b1 = curtainBand(wp, time, 0.0, 0.04, 0.0, 1.0);
+    float b1 = curtainBand(wp, time, 0.0, 0.14, 0.0, 1.0);
     float i1 = fbm(vec2(wp.x * 0.08 + time * 0.012, time * 0.004));
     i1 = 0.45 + i1 * 0.55;
     float p1 = sin(time * 0.2 + wp.x * 0.15) * 0.06 + 0.94;
@@ -282,7 +282,7 @@ void main() {
     c1 = mix(c1, vec3(0.32, 0.92, 0.5), pow(b1, 2.5) * 0.35);
     
     // Band 2 — teal-blue, offset in Z
-    float b2 = curtainBand(wp, time, 4.0, 0.032, 5.5, 1.3);
+    float b2 = curtainBand(wp, time, 4.0, 0.132, 5.5, 1.3);
     float i2 = fbm(vec2(wp.x * 0.06 - time * 0.008, time * 0.003 + 5.0));
     i2 = 0.35 + i2 * 0.65;
     float p2 = sin(time * 0.16 + wp.x * 0.1 + 3.0) * 0.07 + 0.93;
@@ -293,7 +293,7 @@ void main() {
     c2 = mix(c2, vec3(0.14, 0.66, 0.7), pow(b2, 2.0) * 0.3);
     
     // Band 3 — violet/magenta, further away
-    float b3 = curtainBand(wp, time, -3.0, 0.028, 11.0, 1.6);
+    float b3 = curtainBand(wp, time, -3.0, 0.128, 11.0, 1.6);
     float i3 = fbm(vec2(wp.x * 0.05 + time * 0.006, time * 0.002 + 11.0));
     i3 = 0.3 + i3 * 0.7;
     b3 *= i3 * 0.4;
@@ -303,14 +303,14 @@ void main() {
     c3 = mix(c3, vec3(0.48, 0.14, 0.38), pow(b3, 2.0) * 0.45);
     
     // Band 4 — wide faint green wash
-    float b4 = curtainBand(wp, time, 8.0, 0.02, 17.0, 2.2);
+    float b4 = curtainBand(wp, time, 8.0, 0.12, 17.0, 2.2);
     b4 *= fbm(vec2(wp.x * 0.04 + time * 0.004, time * 0.002 + 17.0)) * 0.3;
     b4 *= smoothstep(30.0, 10.0, depth);
     
     vec3 c4 = mix(vec3(0.02, 0.18, 0.14), vec3(0.05, 0.32, 0.22), b4);
     
     // Band 5 — faint high wisps
-    float b5 = curtainBand(wp, time, -6.0, 0.05, 23.0, 2.0);
+    float b5 = curtainBand(wp, time, -6.0, 0.15, 23.0, 2.0);
     b5 *= fbm(vec2(wp.x * 0.03 + time * 0.007, time * 0.002 + 23.0)) * 0.2;
     b5 *= smoothstep(20.0, 5.0, depth);
     
